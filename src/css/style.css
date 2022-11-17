@@ -1,0 +1,187 @@
+:root {
+  --primary: #FD2D01;
+  --Secondary: #FFD7D7;
+  --Tertiaire: #4E5166;
+
+}
+
+
+
+/*
+  *
+  * Healder
+  *
+  ***/
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: var(--Secondary);
+}
+
+.header img {
+  height: 5rem;
+  width: 5rem;
+  object-fit: cover;
+  margin-left: 2%;
+
+}
+
+.disconnect {
+  margin-right: 2%;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: auto;
+
+}
+
+
+/*
+  *
+  * body
+  *
+  ***/
+
+body {
+  background-color: var(--Tertiaire) !important;
+}
+
+.bt {
+  background-color: var(--primary) !important;
+
+}
+
+
+.loginOut {
+  padding-top: 2rem;
+  height: 20rem;
+  /* background-color: white;*/
+
+}
+
+
+.creatCompte {
+
+  color: var(--primary);
+}
+label, .noCompte, .creatCompte{
+  color: white;
+  text-decoration: none;
+}
+label{
+  display: block !important;
+}
+.pubText{
+  color: black;
+}
+
+p {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.postCard {
+  display: flex !important;
+  flex-direction: column;
+  margin: 2rem auto;
+  width: 70%;
+  background-color: white;
+
+}
+
+.postCart,
+img {
+  object-fit: cover;
+
+}
+
+/*.postCardHealder {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  vertical-align: sub;
+  padding: 1% 1% 1% 1%;
+  text-align: start;
+}*/
+
+.cardButton {
+  display: flex;
+  justify-content: space-around;
+  padding: 1% 0 0 0;
+  border-top: var(--Tertiaire) solid .1rem;
+}
+
+.cardButton p {
+  margin: 0;
+
+}
+
+.cardText {
+  padding: 1%;
+
+}
+
+.postDate {
+  color: var(--Tertiaire);
+  margin-top: auto;
+}
+
+.editPostCardHealder {
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.editPostCardIcon {
+  display: flex;
+  /*justify-content: space-around;
+  text-align: center;
+  align-items: center;*/
+
+  color: var(--Tertiaire);
+  background-color: var(--Secondary);
+  height: 3rem;
+  width: 3rem;
+
+  border-radius: 50%;
+}
+
+.editPostButton {
+
+  border-top: var(--Tertiaire) solid .1rem;
+  margin-top: .5rem;
+  display: flex;
+  justify-content: flex-start;
+  color: green;
+}
+
+.editPostCardText {
+
+  width: 70%;
+  background-color: #FD2D01;
+
+
+}
+
+/*
+  *
+  * Footer
+  *
+  ***/
+footer {
+  background-color: var(--Secondary);
+  width: 100%;
+}
+
+/*
+  *
+  * Media 
+  *
+  **
+
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: lightblue;
+  }
+}*/

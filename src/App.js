@@ -1,24 +1,37 @@
-import logo from './logo.svg';
+import Login from './component/login';
+import SingUp from './component/singUp';
+import Post from './component/post';
+import Error from './component/error';
+import Footer from './component/footer';
+import Header from './component/header';
+import 'bootstrap/dist/css/bootstrap.css';
+
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <>
+            <BrowserRouter>
+                <Header />
+
+                <Routes>
+
+                    <Route path="*" element={<Error />} />
+                    <Route path="/post" element={<Post />} />
+
+                    <Route path="/" element={<Login />} />
+                    <Route path="/singUp" element={<SingUp />} />
+                  
+                </Routes>
+
+                <Footer />
+            </BrowserRouter>
+            <ToastContainer />
+        </>
+    );
 }
 
 export default App;
