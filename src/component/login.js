@@ -27,6 +27,8 @@ const Login = () => {
 
         apiLogin(email, password)
             .then((user) => {
+
+                console.log("user: ",user );
                 user.message
                     ? notify(false, user.message)
                     : dispatch(
@@ -46,7 +48,7 @@ const Login = () => {
 
                 navigate('/post');
             })
-            .catch((e) => console.log(e))
+            .catch((e) => console.log("catch: ",e))
             .finally(() => {
                 console.log('finally login');
             });

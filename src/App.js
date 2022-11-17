@@ -21,7 +21,6 @@ function App() {
 
                     <Route path="*" element={<Error />} />
                     <Route path="/post" element={<Post />} />
-
                     <Route path="/" element={<Login />} />
                     <Route path="/singUp" element={<SingUp />} />
                   
