@@ -136,7 +136,7 @@ function App() {
             });
     };
     useEffect(() => {
-        if (setLoggedIn(selectorLoggedIn)) {
+        if (!loggedIn) {
             navigate('/');
         }
         loadPosts();
