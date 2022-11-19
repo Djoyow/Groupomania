@@ -20,8 +20,10 @@ import { selectUser, selectLoggedIn } from '../features/userSlice';
 import { notify } from '../service/notification';
 import Spinner from '../component/spinner';
 import { getPost } from '../service/auth.service';
+import { useCallback } from 'react';
 
 function App() {
+    const imgUrl='https://res.cloudinary.com/dkdwhd7hl/image/upload/v1668853446/Groupomania/posts/post_';
     const [show, setShow] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
@@ -52,10 +54,13 @@ function App() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector(selectUser);
-    const loggedIn = useSelector(selectLoggedIn);
     const posts = useSelector(selectPosts);
+    //const loggedIn = useSelector(selectLoggedIn);
 
-    const loadPosts = () => {
+    const selectorLoggedIn = useSelector(selectLoggedIn);
+    const [loggedIn, setLoggedIn] = useState(selectorLoggedIn);
+
+    const loadPosts = useCallback(() => {
         setLoaded(true);
         getApiPosts(user.token)
             .then((posts) => {
@@ -68,11 +73,9 @@ function App() {
             })
             .catch((e) => console.log(e))
             .finally((rep) => {
-                console.log("rep: ",rep);
                 setLoaded(false);
-                console.log('finally loadPosts');
             });
-    };
+    },[]);
 
     const cleanConstan = () => {
         setFile(null);
@@ -138,19 +141,19 @@ function App() {
             });
     };
     useEffect(() => {
-        if (!loggedIn) {
+        if (setLoggedIn(selectorLoggedIn)) {
             navigate('/');
         }
         loadPosts();
-    }, [user, appChange]);
+    }, [ selectorLoggedIn,appChange]);
 
     return (
-        <div className="">
+        <div >
             <div className="shadow p-3 mb-5 bg-body  rounded border border-2 postCard">
-                <div className="editPostCardHealderg">
-                <label className='pubText'>Créer une publication
+                <div>
+                <label className='text-black'>Créer une publication
                     <input
-                        className="form-control form-control-sm editPostCardTextr"
+                        className="form-control form-control-sm "
                         type="text"
                         placeholder=""
                         onClick={handleShow}                        
@@ -224,7 +227,7 @@ function App() {
                                     Le {post.createOne.substring(0, 10)}
                                 </p>
                             </div>
-                            <img src={post.imageUrl} className="" alt={post.text.substring(0,5)} />
+                            <img src={imgUrl+post._id} className="" alt={post.text.substring(0,5)} />
                             <div className="cardBody">
                                 <p className="cardText">{post.text}</p>
                                 <div className="cardButton">

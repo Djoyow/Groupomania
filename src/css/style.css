@@ -73,9 +73,7 @@ label, .noCompte, .creatCompte{
 label{
   display: block !important;
 }
-.pubText{
-  color: black;
-}
+
 
 p {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
