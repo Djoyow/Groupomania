@@ -67,14 +67,9 @@ function App() {
                 return getPostUserName(posts, user.token);
             })
             
-            .then(() => {
-                dispatch( savePosts(getPost()));
-                
-            })
+            .then(() => {dispatch( savePosts(getPost()));})
             .catch((e) => console.log(e))
-            .finally((rep) => {
-                setLoaded(false);
-            });
+            .finally((rep) => setLoaded(false));
     },[]);
 
     const cleanConstan = () => {
