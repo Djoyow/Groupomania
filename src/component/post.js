@@ -24,6 +24,10 @@ import { useCallback } from 'react';
 
 function App() {
     const imgUrl='https://res.cloudinary.com/dkdwhd7hl/image/upload/v14858684/Groupomania/posts/post_';
+    //v14858684
+  //       url: 'http://res.cloudinary.com/dkdwhd7hl/image/upload/v1668873640/Groupomania/posts/post_6378edc1cb3ed1186ba45188.png',
+  //secure_url: 'https://res.cloudinary.com/dkdwhd7hl/image/upload/v1668873640/Groupomania/posts/post_6378edc1cb3ed1186ba45188.png',
+    
     const [show, setShow] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
@@ -233,7 +237,8 @@ function App() {
                                     Le {post.createOne.substring(0, 10)}
                                 </p>
                             </div>
-                            <img src={imgUrl+post._id} className="" alt={post.text.substring(0,5)} />
+                           { console.log("post.imgUrl: ",post.imageUrl)}
+                            <img src={ imgUrl+post._id +'.'+post.imageUrl} className="" alt={post.text.substring(0,5)} />
                             <div className="cardBody">
                                 <p className="cardText">{post.text}</p>
                                 <div className="cardButton">
