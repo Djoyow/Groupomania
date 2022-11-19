@@ -23,7 +23,7 @@ import { getPost } from '../service/auth.service';
 import { useCallback } from 'react';
 
 function App() {
-    const imgUrl='https://res.cloudinary.com/dkdwhd7hl/image/upload/v1668853446/Groupomania/posts/post_';
+    const imgUrl='https://res.cloudinary.com/dkdwhd7hl/image/upload/v14858684/Groupomania/posts/post_';
     const [show, setShow] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
