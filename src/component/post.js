@@ -86,10 +86,13 @@ function App() {
         e.preventDefault();
         handleClose();
 
+        setLoaded(true);
+
         creatPost(user.token, postText, file)
             .catch((e) => console.log(e))
             .finally(() => {
                 handleClose();
+                setLoaded(false);
                 setAppChange(!appChange);
                 notify(true, 'Votre poste a été ajouté');
             });
@@ -99,12 +102,15 @@ function App() {
     const update = (e, post) => {
         e.preventDefault();
 
+        setLoaded(true);
+
         user.userId === post.userId || user.isAdmin
             ? updatePost(user.token, postText, file, activePost._id)
                   .catch((e) => {
                       console.log(e);
                   })
                   .finally(() => {
+                      setLoaded(true);
                       setAppChange(!appChange);
                       notify(true, 'Votre poste a été modifié');
                   })
@@ -116,9 +122,11 @@ function App() {
         e.preventDefault();
 
         if (user.userId === post.userId || user.isAdmin) {
+            setLoaded(true);
             deletPost(user, post)
                 .catch((e) => console.log(e))
                 .finally(() => {
+                    setLoaded(true);
                     setAppChange(!appChange);
                     notify(true, 'Votre poste a été supprimé');
                 });
@@ -128,10 +136,13 @@ function App() {
     };
     const handleLike = (e, post) => {
         e.preventDefault();
+        
+        setLoaded(true);
 
         likePost(user, post)
             .catch((e) => console.log(e))
             .finally(() => {
+                setLoaded(true);
                 setAppChange(!appChange);
             });
     };
