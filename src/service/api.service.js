@@ -2,7 +2,7 @@
 
 import { getLikeValue } from './posts.service';
 
-//const BASE_URL = 'http://localhost:3002/api';
+//const BASE_URL = 'http://localhost:8080/api';
 const BASE_URL = 'https://groupomania-api-back.herokuapp.com/api';
 
 export const singUp = (email, password, userName) => {
@@ -23,6 +23,17 @@ export const getUserName = (userId, token) => {
             Authorization: 'Bearer ' + token,
         },
     }).then((response) => response.json());
+};
+
+export const getUserList = (token) => {
+
+    return fetch(BASE_URL + '/auth/userList/', {
+        method: 'GET',
+       headers: {
+           'Content-Type': 'application/json',
+           Authorization: 'Bearer ' + token,
+       },
+   }).then((response) => response.json());
 };
 
 export const apiLogin = (login, password) => {
