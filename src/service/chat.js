@@ -1,5 +1,5 @@
 
-
+/*
 export const saveChate=(data)=>{
    
     let temp =getChats();
@@ -19,4 +19,4 @@ export const getChats = () => {
     else {
         return JSON.parse(chats);
     }
-}
+}*/

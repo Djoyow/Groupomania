@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate, useNavigate } from 'react-router-dom';
-import { selectUser, selectLoggedIn } from '../features/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { selectUser } from '../features/userSlice';
 //import { selectLoggedIn } from "../features/userSlice";
 import { singUp } from '../service/api.service';
 

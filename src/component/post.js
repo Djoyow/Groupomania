@@ -78,7 +78,7 @@ function App() {
             })
             
             .then(() => {dispatch( savePosts(getPost()));})
-            .catch((e) => console.log(e))
+            .catch((e) => console.log("#error: ",e))
             .finally((rep) => setLoaded(false));
     },[]);
 

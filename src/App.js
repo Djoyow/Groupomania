@@ -4,7 +4,6 @@ import Post from './component/post';
 import Error from './component/error';
 import Footer from './component/footer';
 import Header from './component/header';
-import Chat from './component/chat'; 
 import 'bootstrap/dist/css/bootstrap.css';
 
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
@@ -24,8 +23,6 @@ function App() {
                     <Route path="/post" element={<Post />} />
                     <Route path="/" element={<Login />} />
                     <Route path="/singUp" element={<SingUp />} />
-                    <Route path="/chat" element={<Chat />} />
-
                   
                 </Routes>
 
