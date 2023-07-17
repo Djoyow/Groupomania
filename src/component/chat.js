@@ -1,4 +1,4 @@
-import '../css/style.css'
+/*import '../css/style.css'
 import { io, Socket } from "socket.io-client";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../features/userSlice';
@@ -25,7 +25,7 @@ function Chat() {
     /*socket.on('connection',()=>{
         console.log(socket.id); // x8WIv7-mJelg7on_ALbx
 
-    })*/
+    })/
 
     //io.connect('http://localhost:3000');
     
@@ -57,7 +57,7 @@ function Chat() {
    /*const  activeChat = (e)=>{
     e.preventDefault();
     socket.emit("join_room",user.userId);
-    }*/
+    }/
 
     const handleSelectUser=(e,userActif)=>{
         e.preventDefault();
@@ -116,7 +116,7 @@ function Chat() {
                                 {/*<div className="pt-1">
                                         <p className="small text-muted mb-1">Just now</p>
                                         <span className="badge bg-danger float-end">1</span>
-                                    </div>*/
+                                    </div>/
                                 }
                                 </a>
                             </li> 
@@ -142,7 +142,7 @@ function Chat() {
                      * 
                      * Last messages
                      * 
-                    */}
+                    /}
                     {
 
                     getChats().map((message,i)=>{
@@ -184,7 +184,7 @@ function Chat() {
                     </li>
                     <button onClick={(e)=>sendMessage(e)} type="button" className="btn btn-info btn-rounded float-end">Send</button>
                    {/* <button onClick={(e)=>GetUserList(e)} type="button" className="btn btn-info me-2 btn-rounded float-end">list user</button>
-                   <button onClick={(e)=>activeChat(e)} type="button" className="btn btn-info me-2 btn-rounded float-end">active Chat</button>*/}
+                   <button onClick={(e)=>activeChat(e)} type="button" className="btn btn-info me-2 btn-rounded float-end">active Chat</button>/}
 
                     
                     </ul>
@@ -200,4 +200,4 @@ function Chat() {
     );
 }
 
-export default Chat;
+export default Chat;*/
