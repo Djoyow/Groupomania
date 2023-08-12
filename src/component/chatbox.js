@@ -32,8 +32,8 @@ function ChatSummary({ userName, lastMessage, lastMessageTime, isOnline, unreadC
 	return (
 		<li className='p-2 border-bottom' style={{ cursor: 'pointer' }} onClick={onSelect}>
 			<div className='d-flex justify-content-between gap-2'>
-				<div className='d-flex flex-row gap-2'>
-					<div className='d-flex align-items-center justify-content-center position-relative'>
+				<div className='d-flex align-items-center flex-row gap-2'>
+					<div className='position-relative'>
 						<ProfileIcon />
 						<span
 							className={`position-absolute bottom-0 end-0 p-1 ${
@@ -43,12 +43,12 @@ function ChatSummary({ userName, lastMessage, lastMessageTime, isOnline, unreadC
 							<span className='visually-hidden'>New alerts</span>
 						</span>
 					</div>
-					<div className='pt-1 d-flex flex-column justify-content-center'>
+					<div className='pt-1 d-flex flex-column align-items-start justify-content-center'>
 						<p className='fw-bold mb-0'>{userName}</p>
 						{!isNull(lastMessage) && <p className='small text-muted'>{lastMessage}</p>}
 					</div>
 				</div>
-				<div className='pt-1'>
+				<div className='pt-1 d-flex flex-column align-items-end justify-content-center'>
 					{!isNull(lastMessageTime) && <p className='small text-muted mb-1'>{lastMessageTime}</p>}
 					{!isNull(unreadCount) && (
 						<span className='badge bg-danger rounded-pill float-end'>{unreadCount}</span>
@@ -62,7 +62,7 @@ function ChatSummary({ userName, lastMessage, lastMessageTime, isOnline, unreadC
 const CONVERSATION_TAB = 'Conversations'
 const ONLINEUSERS_TAB = 'Online Users'
 
-function UsersWindow({ closeWindow, conversations, onlineUsers, onUserSelect }) {
+function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnline }) {
 	const [currentTab, setCurrentTab] = useState(ONLINEUSERS_TAB)
 
 	const switchTab = tab => () => setCurrentTab(tab)
@@ -74,11 +74,44 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onUserSelect }) 
 	const emptyMessageForCurrentView =
 		currentTab === CONVERSATION_TAB ? "You've not started any converstaions yet" : 'There are no users online'
 
+	const getPropsForChatSummary = param => {
+		if (currentTab === CONVERSATION_TAB) {
+			const convo = param
+			const prop = {
+				userName: convo.name,
+				unreadCount: convo.unreadCount,
+				isOnline: isOnline(convo.id),
+				onSelect: () => onSelect(convo)
+			}
+
+			const lastMessage = convo.messages[convo.messages.length - 1]
+
+			if (lastMessage) {
+				prop.lastMessage = lastMessage.text
+				prop.lastMessageTime = lastMessage.timestamp
+			}
+
+			return prop
+		}
+
+		if (currentTab === ONLINEUSERS_TAB) {
+			const user = param
+			return {
+				userName: user.userName,
+				isOnline: true,
+				onSelect: () => onSelect(user)
+			}
+		}
+
+		// should never get here but exists for safety
+		return {}
+	}
+
 	// return the current
 	const currentView = hasContentForCurrentView() ? (
 		<ul className='list-unstyled mb-0'>
-			{collectionForCurrentView.map(user => {
-				return <ChatSummary key={user.userId} userName={user.userName} onSelect={() => onUserSelect(user)} />
+			{collectionForCurrentView.map(arg => {
+				return <ChatSummary key={arg.userId || arg.id} {...getPropsForChatSummary(arg)} />
 			})}
 		</ul>
 	) : (
@@ -120,7 +153,23 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onUserSelect }) 
 	)
 }
 
-function ChatWindow({ closeChat, minimizeWindow, currentChat }) {
+function ChatWindow({ closeChat, minimizeWindow, sendMessage, userName, conversation }) {
+	const user = useSelector(selectUser)
+	const [message, setMessage] = useState('')
+
+	const updateMessage = e => setMessage(e.target.value)
+
+	const checkForEnter = e => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault()
+
+			if (message !== '') {
+				sendMessage(message)
+				setMessage('')
+			}
+		}
+	}
+
 	return (
 		<div className='card' style={{ borderRadius: '15px', height: '600px' }}>
 			{/* Chat Header */}
@@ -131,113 +180,162 @@ function ChatWindow({ closeChat, minimizeWindow, currentChat }) {
 				<Button size='sm' variant='' onClick={closeChat}>
 					<FontAwesomeIcon icon={faAngleLeft} size='lg' />
 				</Button>
-				<p className='mb-0 fw-bold'>Live chat</p>
+				<p className='mb-0 fw-bold'>{userName}</p>
 				<Button size='sm' variant='' onClick={minimizeWindow}>
 					<FontAwesomeIcon icon={faCaretDown} size='lg' />
 				</Button>
 			</div>
 
 			{/* Chat Body */}
-			<div className='card-body'>
-				<div className='d-flex flex-row justify-content-start mb-4'>
-					<img
-						src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp'
-						alt='avatar 1'
-						style={{ width: '45px', height: '100%' }}
-					/>
-					<div
-						className='p-3 ms-3'
-						style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}
-					>
-						<p className='small mb-0'>
-							Hello and thank you for visiting MDBootstrap. Please click the video below.
-						</p>
-					</div>
-				</div>
-
-				<div className='d-flex flex-row justify-content-end mb-4'>
-					<div className='p-3 me-3 border' style={{ borderRadius: '15px', backgroundColor: '#fbfbfb' }}>
-						<p className='small mb-0'>Thank you, I really like your product.</p>
-					</div>
-					<img
-						src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp'
-						alt='avatar 1'
-						style={{ width: '45px', height: '100%' }}
-					/>
-				</div>
-
-				<div className='d-flex flex-row justify-content-start mb-4'>
-					<img
-						src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp'
-						alt='avatar 1'
-						style={{ width: '45px', height: '100%' }}
-					/>
-					<div className='ms-3' style={{ borderRadius: '15px' }}>
-						<div className='bg-image'>
-							<img
-								src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp'
-								style={{ borderRadius: '15px' }}
-								alt='video'
-							/>
-							<a href='#!'>
-								<div className='mask'></div>
-							</a>
+			<div className='card-body d-flex flex-column justify-content-between'>
+				<div>
+					{/* Their Message */}
+					<div className='d-flex flex-row justify-content-start mb-4'>
+						<ProfileIcon />
+						<div
+							className='p-3 ms-3'
+							style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}
+						>
+							<p className='small mb-0'>
+								Hello and thank you for visiting MDBootstrap. Please click the video below.
+							</p>
 						</div>
 					</div>
-				</div>
-
-				<div className='d-flex flex-row justify-content-start mb-4'>
-					<img
-						src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp'
-						alt='avatar 1'
-						style={{ width: '45px', height: '100%' }}
-					/>
-					<div
-						className='p-3 ms-3'
-						style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}
-					>
-						<p className='small mb-0'>...</p>
+					{/* My Message */}
+					<div className='d-flex flex-row justify-content-end mb-4'>
+						<div className='p-3 me-3 border' style={{ borderRadius: '15px', backgroundColor: '#fbfbfb' }}>
+							<p className='small mb-0'>Thank you, I really like your product.</p>
+						</div>
+						<ProfileIcon />
 					</div>
 				</div>
 
-				<div className='form-outline'>
-					<textarea className='form-control' id='textAreaExample' rows='4'></textarea>
-					<label className='form-label' htmlFor='textAreaExample'>
-						Type your message
-					</label>
+				<div className='form-outline' style={{ marginTop: 'auto' }}>
+					<textarea
+						className='form-control'
+						id='textAreaExample'
+						rows='1'
+						value={message}
+						onChange={updateMessage}
+						onKeyDown={checkForEnter}
+					></textarea>
 				</div>
 			</div>
 		</div>
 	)
 }
 
+/* 
+type Message = 
+    { from: UserId
+    , to: UserId
+    , text: String
+    , timestamp: TimeStamp
+    }
+
+type Conversation = 
+    { id: UserId
+    , name: UserName
+    , messages: List<Message>
+    , totalUnread: Int
+    }
+*/
+
 export default function ChatBox() {
 	const user = useSelector(selectUser)
 	const [isOpen, setIsOpen] = useState(false)
 
-	// reference to someone this user currently chatting with
-	const [currentChat, setCurrentChat] = useState(null)
+	// reference to an open conversation
+	const [openConvo, setOpenConvo] = useState(null)
 
 	const [onlineUsers, setOnlineUsers] = useState({})
-	const [convos, setConvos] = useState([])
+	const [convos, setConvos] = useState([]) // Array<Conversation>
 	const socketRef = useRef(null)
+
+	const isOnline = userId => onlineUsers[userId] !== undefined
 
 	const minimizeFloatingChat = () => setIsOpen(false)
 	const openFloatingChat = () => setIsOpen(true)
 
-	// closes the current chat
-	const closeCurrentChat = () => setCurrentChat(null)
+	// closes the open conversation
+	const closeOpenConvo = () => setOpenConvo(null)
+
+	// open a conversation with another user
+	const openConversation = userDeets => {
+		const existingConvo = convos.find(convo => convo.id === userDeets.userId)
+		// if the convo doesn't exist, start a new one
+		if (!existingConvo) {
+			const newConvo = {
+				id: userDeets.userId,
+				name: userDeets.userName,
+				messages: [],
+				totalUnread: 0
+			}
+			setOpenConvo(newConvo)
+			// add to the list of conversations
+			setConvos(ec => [newConvo, ...ec])
+		} else {
+			setConvos(existingConvo)
+		}
+	}
 
 	const onlineUsersList = useMemo(
 		() => Object.values(onlineUsers).filter(u => u.userId !== user.userId),
 		[onlineUsers, user]
 	)
+
 	const onlineUsersOrderedByUserName = useMemo(
 		() => onlineUsersList.sort((u1, u2) => (u1.userName > u2.userName ? 1 : -1)),
 		[onlineUsersList]
 	)
 
-	// set up connection
+	const sendMessage = message => {
+		const newMessage = {
+			from: user.userId,
+			to: openConvo.userId,
+			text: message,
+			timestamp: Date.now()
+		}
+		socketRef.current.emit('message', newMessage)
+	}
+
+	const receiveMessage = (messageDeets) /*: Message*/ => {
+		setConvos(previousConvos => {
+			// find the conversation for this user
+			const chatIndex = previousConvos.findIndex(c => c.userId === messageDeets.from)
+
+			if (chatIndex === -1) {
+				// this is a new conversation started by the other user
+				// create a new convo and move it to the top of the conversations
+				const newConvo = {
+					id: messageDeets.from,
+					name: onlineUsers[messageDeets.fromId].userName, // lookup the username from list of online users
+					messages: [messageDeets],
+					totalUnread: 1
+				}
+
+				// add the new conversation at the top of the chat
+				previousConvos.unshift(newConvo)
+			} else {
+				// if there's existing conversation
+				const existingConvo = previousConvos[chatIndex]
+
+				// add the message to it
+				existingConvo.messages.push(messageDeets)
+
+				// if this conversation is not open, count the new message as unread
+				if (openConvo.userId !== messageDeets.from) existingConvo.unreadCount += 1
+
+				// push the conversation to the top of the list
+				previousConvos.splice(chatIndex, 1)
+				previousConvos.unshift(existingConvo)
+			}
+
+			return previousConvos
+		})
+	}
+
+	// set up connection na listeners
 	useEffect(() => {
 		const socket = io('http://localhost:5000/')
 		// ask for the online users when connection is complete
@@ -247,28 +345,36 @@ export default function ChatBox() {
 		})
 
 		// listen for changes to online users
-		socket.on('online-users', onlineUsers => setOnlineUsers(onlineUsers))
+		socket.on('online-users', onlineUsers => {
+            console.log("changes to online users")
+            setOnlineUsers(onlineUsers)
+        })
+
+		// listen for messages
+		socket.on('message', receiveMessage)
 
 		return () => socket.disconnect()
-	}, [])
+	}, [user])
 
 	return (
 		<>
 			<div className='position-fixed bottom-0 end-0 m-3'>
 				{isOpen ? (
 					<div style={{ maxWidth: '550px', width: '550px', maxHeight: '600px' }}>
-						{currentChat === null ? (
+						{openConvo === null ? (
 							<UsersWindow
 								closeWindow={minimizeFloatingChat}
 								conversations={convos}
 								onlineUsers={onlineUsersOrderedByUserName}
-								onUserSelect={setCurrentChat}
+								onSelect={openConversation}
+								isOnline={isOnline}
 							/>
 						) : (
 							<ChatWindow
 								minimizeWindow={minimizeFloatingChat}
-								closeChat={closeCurrentChat}
-								currentChat={currentChat}
+								closeChat={closeOpenConvo}
+								sendMessage={sendMessage}
+								conversation={openConvo}
 							/>
 						)}
 					</div>
