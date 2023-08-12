@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import Button from 'react-bootstrap/Button'
-import { faAngleLeft, faCaretDown, faComments, faSearch, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faAngleLeft, faCaretDown, faComments } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { io } from 'socket.io-client'
 import { selectUser } from '../features/userSlice'
@@ -153,7 +153,7 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 	)
 }
 
-function ChatWindow({ closeChat, minimizeWindow, sendMessage, userName, conversation }) {
+function ChatWindow({ closeChat, minimizeWindow, sendMessage, conversation }) {
 	const user = useSelector(selectUser)
 	const [message, setMessage] = useState('')
 
@@ -170,6 +170,24 @@ function ChatWindow({ closeChat, minimizeWindow, sendMessage, userName, conversa
 		}
 	}
 
+	const renderTheirMessage = msg => (
+		<div className='d-flex flex-row justify-content-start mb-4'>
+			<ProfileIcon />
+			<div className='p-3 ms-3' style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}>
+				<p className='small mb-0'>{msg}</p>
+			</div>
+		</div>
+	)
+
+	const renderMyMessage = msg => (
+		<div className='d-flex flex-row justify-content-end mb-4'>
+			<div className='p-3 me-3 border' style={{ borderRadius: '15px', backgroundColor: '#fbfbfb' }}>
+				<p className='small mb-0'>{msg}</p>
+			</div>
+			<ProfileIcon />
+		</div>
+	)
+
 	return (
 		<div className='card' style={{ borderRadius: '15px', height: '600px' }}>
 			{/* Chat Header */}
@@ -180,7 +198,7 @@ function ChatWindow({ closeChat, minimizeWindow, sendMessage, userName, conversa
 				<Button size='sm' variant='' onClick={closeChat}>
 					<FontAwesomeIcon icon={faAngleLeft} size='lg' />
 				</Button>
-				<p className='mb-0 fw-bold'>{userName}</p>
+				<p className='mb-0 fw-bold'>{conversation.name}</p>
 				<Button size='sm' variant='' onClick={minimizeWindow}>
 					<FontAwesomeIcon icon={faCaretDown} size='lg' />
 				</Button>
@@ -189,25 +207,17 @@ function ChatWindow({ closeChat, minimizeWindow, sendMessage, userName, conversa
 			{/* Chat Body */}
 			<div className='card-body d-flex flex-column justify-content-between'>
 				<div>
-					{/* Their Message */}
-					<div className='d-flex flex-row justify-content-start mb-4'>
-						<ProfileIcon />
-						<div
-							className='p-3 ms-3'
-							style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}
-						>
-							<p className='small mb-0'>
-								Hello and thank you for visiting MDBootstrap. Please click the video below.
-							</p>
-						</div>
-					</div>
-					{/* My Message */}
-					<div className='d-flex flex-row justify-content-end mb-4'>
-						<div className='p-3 me-3 border' style={{ borderRadius: '15px', backgroundColor: '#fbfbfb' }}>
-							<p className='small mb-0'>Thank you, I really like your product.</p>
-						</div>
-						<ProfileIcon />
-					</div>
+					{conversation.messages.length === 0
+						? 'No messages to show'
+						: conversation.messages.map(message => {
+								if (message.from === user.userId) {
+									// render my message
+									return renderMyMessage(message.text)
+								} else {
+									// render their message
+									return renderTheirMessage(message.text)
+								}
+						  })}
 				</div>
 
 				<div className='form-outline' style={{ marginTop: 'auto' }}>
@@ -346,14 +356,15 @@ export default function ChatBox() {
 
 		// listen for changes to online users
 		socket.on('online-users', onlineUsers => {
-            console.log("changes to online users")
-            setOnlineUsers(onlineUsers)
-        })
+			console.log('changes to online users')
+			setOnlineUsers(onlineUsers)
+		})
 
 		// listen for messages
 		socket.on('message', receiveMessage)
 
 		return () => socket.disconnect()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user])
 
 	return (
