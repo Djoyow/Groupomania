@@ -1,13 +1,49 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import dayjs from 'dayjs'
 import Button from 'react-bootstrap/Button'
 import { faAngleLeft, faCaretDown, faComments } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { io } from 'socket.io-client'
+
 import { selectUser } from '../features/userSlice'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+	selectConvos,
+	selectOnlineUsers,
+	openConvo,
+	closeSelectedConvo,
+	selectSelectedConvo,
+	util
+} from '../features/chatSlice'
+import { sendMessage } from '../socket'
+
+function formatTime(ms) {
+	const day = dayjs(ms)
+	const now = dayjs()
+
+	if (now.diff(day, 's') < 1) return 'now'
+	if (now.diff(day, 'd') < 1) return day.format('hh:mm A')
+	if (now.diff(day, 'w') < 1) return day.format('dddd') // format as week
+	return day.format('DD/MM/YYYY')
+}
 
 function isNull(param) {
 	return param === null || param === undefined
+}
+
+function TimeDiff({ timestamp }) {
+	const [display, setDisplay] = useState(formatTime(timestamp))
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			setDisplay(() => formatTime(timestamp))
+		}, 300)
+
+		return () => {
+			clearInterval(intervalId)
+		}
+	}, [timestamp])
+
+	return <p className='small text-muted mb-1'>{display}</p>
 }
 
 function ProfileIcon() {
@@ -49,7 +85,7 @@ function ChatSummary({ userName, lastMessage, lastMessageTime, isOnline, unreadC
 					</div>
 				</div>
 				<div className='pt-1 d-flex flex-column align-items-end justify-content-center'>
-					{!isNull(lastMessageTime) && <p className='small text-muted mb-1'>{lastMessageTime}</p>}
+					{!isNull(lastMessageTime) && <TimeDiff timestamp={lastMessageTime} />}
 					{!isNull(unreadCount) && (
 						<span className='badge bg-danger rounded-pill float-end'>{unreadCount}</span>
 					)}
@@ -63,7 +99,7 @@ const CONVERSATION_TAB = 'Conversations'
 const ONLINEUSERS_TAB = 'Online Users'
 
 function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnline }) {
-	const [currentTab, setCurrentTab] = useState(ONLINEUSERS_TAB)
+	const [currentTab, setCurrentTab] = useState(CONVERSATION_TAB)
 
 	const switchTab = tab => () => setCurrentTab(tab)
 
@@ -81,7 +117,9 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 				userName: convo.name,
 				unreadCount: convo.unreadCount,
 				isOnline: isOnline(convo.id),
-				onSelect: () => onSelect(convo)
+				onSelect: () => {
+					onSelect({ userId: convo.id, userName: convo.name })
+				}
 			}
 
 			const lastMessage = convo.messages[convo.messages.length - 1]
@@ -99,7 +137,9 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 			return {
 				userName: user.userName,
 				isOnline: true,
-				onSelect: () => onSelect(user)
+				onSelect: () => {
+					onSelect({ userId: user.userId, userName: user.userName })
+				}
 			}
 		}
 
@@ -123,14 +163,6 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 			<ul className='nav nav-pills'>
 				<li className='nav-item'>
 					<button
-						className={`nav-link ${currentTab === ONLINEUSERS_TAB && 'active'}`}
-						onClick={switchTab(ONLINEUSERS_TAB)}
-					>
-						{ONLINEUSERS_TAB}
-					</button>
-				</li>
-				<li className='nav-item'>
-					<button
 						className={`nav-link ${currentTab === CONVERSATION_TAB && 'active'}`}
 						aria-current='page'
 						onClick={switchTab(CONVERSATION_TAB)}
@@ -138,6 +170,15 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 						{CONVERSATION_TAB}
 					</button>
 				</li>
+				<li className='nav-item'>
+					<button
+						className={`nav-link ${currentTab === ONLINEUSERS_TAB && 'active'}`}
+						onClick={switchTab(ONLINEUSERS_TAB)}
+					>
+						{ONLINEUSERS_TAB}
+					</button>
+				</li>
+
 				<li className='nav-item' style={{ marginLeft: 'auto' }}>
 					<Button variant='primary' onClick={closeWindow}>
 						<FontAwesomeIcon icon={faCaretDown} size='lg' />
@@ -153,7 +194,7 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 	)
 }
 
-function ChatWindow({ closeChat, minimizeWindow, sendMessage, conversation }) {
+function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 	const user = useSelector(selectUser)
 	const [message, setMessage] = useState('')
 
@@ -164,7 +205,7 @@ function ChatWindow({ closeChat, minimizeWindow, sendMessage, conversation }) {
 			e.preventDefault()
 
 			if (message !== '') {
-				sendMessage(message)
+				send(message)
 				setMessage('')
 			}
 		}
@@ -235,58 +276,27 @@ function ChatWindow({ closeChat, minimizeWindow, sendMessage, conversation }) {
 	)
 }
 
-/* 
-type Message = 
-    { from: UserId
-    , to: UserId
-    , text: String
-    , timestamp: TimeStamp
-    }
-
-type Conversation = 
-    { id: UserId
-    , name: UserName
-    , messages: List<Message>
-    , totalUnread: Int
-    }
-*/
-
 export default function ChatBox() {
 	const user = useSelector(selectUser)
+	const convos = useSelector(selectConvos)
+	const selectedConvo = useSelector(selectSelectedConvo)
+	const onlineUsers = useSelector(selectOnlineUsers)
+	const dispatch = useDispatch()
+
 	const [isOpen, setIsOpen] = useState(false)
 
-	// reference to an open conversation
-	const [openConvo, setOpenConvo] = useState(null)
-
-	const [onlineUsers, setOnlineUsers] = useState({})
-	const [convos, setConvos] = useState([]) // Array<Conversation>
-	const socketRef = useRef(null)
-
+	// UTILITY FUNCTION
 	const isOnline = userId => onlineUsers[userId] !== undefined
 
 	const minimizeFloatingChat = () => setIsOpen(false)
 	const openFloatingChat = () => setIsOpen(true)
 
 	// closes the open conversation
-	const closeOpenConvo = () => setOpenConvo(null)
+	const closeOpenConvo = () => dispatch(closeSelectedConvo())
 
 	// open a conversation with another user
 	const openConversation = userDeets => {
-		const existingConvo = convos.find(convo => convo.id === userDeets.userId)
-		// if the convo doesn't exist, start a new one
-		if (!existingConvo) {
-			const newConvo = {
-				id: userDeets.userId,
-				name: userDeets.userName,
-				messages: [],
-				totalUnread: 0
-			}
-			setOpenConvo(newConvo)
-			// add to the list of conversations
-			setConvos(ec => [newConvo, ...ec])
-		} else {
-			setConvos(existingConvo)
-		}
+		dispatch(openConvo(userDeets))
 	}
 
 	const onlineUsersList = useMemo(
@@ -299,80 +309,23 @@ export default function ChatBox() {
 		[onlineUsersList]
 	)
 
-	const sendMessage = message => {
-		const newMessage = {
+	const send = message => {
+		const newMessage = util.createMessage({
 			from: user.userId,
-			to: openConvo.userId,
+			to: selectedConvo.id,
 			text: message,
 			timestamp: Date.now()
-		}
-		socketRef.current.emit('message', newMessage)
+		})
+
+		sendMessage(newMessage)
 	}
-
-	const receiveMessage = (messageDeets) /*: Message*/ => {
-		setConvos(previousConvos => {
-			// find the conversation for this user
-			const chatIndex = previousConvos.findIndex(c => c.userId === messageDeets.from)
-
-			if (chatIndex === -1) {
-				// this is a new conversation started by the other user
-				// create a new convo and move it to the top of the conversations
-				const newConvo = {
-					id: messageDeets.from,
-					name: onlineUsers[messageDeets.fromId].userName, // lookup the username from list of online users
-					messages: [messageDeets],
-					totalUnread: 1
-				}
-
-				// add the new conversation at the top of the chat
-				previousConvos.unshift(newConvo)
-			} else {
-				// if there's existing conversation
-				const existingConvo = previousConvos[chatIndex]
-
-				// add the message to it
-				existingConvo.messages.push(messageDeets)
-
-				// if this conversation is not open, count the new message as unread
-				if (openConvo.userId !== messageDeets.from) existingConvo.unreadCount += 1
-
-				// push the conversation to the top of the list
-				previousConvos.splice(chatIndex, 1)
-				previousConvos.unshift(existingConvo)
-			}
-
-			return previousConvos
-		})
-	}
-
-	// set up connection na listeners
-	useEffect(() => {
-		const socket = io('http://localhost:5000/')
-		// ask for the online users when connection is complete
-		socket.on('connect', () => {
-			// announce this user as "now online"
-			socket.emit('join', { userId: user.userId, userName: user.userName })
-		})
-
-		// listen for changes to online users
-		socket.on('online-users', onlineUsers => {
-			console.log('changes to online users')
-			setOnlineUsers(onlineUsers)
-		})
-
-		// listen for messages
-		socket.on('message', receiveMessage)
-
-		return () => socket.disconnect()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [user])
 
 	return (
 		<>
 			<div className='position-fixed bottom-0 end-0 m-3'>
 				{isOpen ? (
 					<div style={{ maxWidth: '550px', width: '550px', maxHeight: '600px' }}>
-						{openConvo === null ? (
+						{selectedConvo === null ? (
 							<UsersWindow
 								closeWindow={minimizeFloatingChat}
 								conversations={convos}
@@ -384,8 +337,8 @@ export default function ChatBox() {
 							<ChatWindow
 								minimizeWindow={minimizeFloatingChat}
 								closeChat={closeOpenConvo}
-								sendMessage={sendMessage}
-								conversation={openConvo}
+								send={send}
+								conversation={selectedConvo}
 							/>
 						)}
 					</div>
