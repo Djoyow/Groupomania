@@ -12,7 +12,8 @@ import {
 	openConvo,
 	closeSelectedConvo,
 	selectSelectedConvo,
-	util
+	util,
+	addMessageToConvo
 } from '../features/chatSlice'
 import { sendMessage } from '../socket'
 
@@ -20,7 +21,7 @@ function formatTime(ms) {
 	const day = dayjs(ms)
 	const now = dayjs()
 
-	if (now.diff(day, 's') < 1) return 'now'
+	if (now.diff(day, 'm') < 1) return 'now'
 	if (now.diff(day, 'd') < 1) return day.format('hh:mm A')
 	if (now.diff(day, 'w') < 1) return day.format('dddd') // format as week
 	return day.format('DD/MM/YYYY')
@@ -86,7 +87,7 @@ function ChatSummary({ userName, lastMessage, lastMessageTime, isOnline, unreadC
 				</div>
 				<div className='pt-1 d-flex flex-column align-items-end justify-content-center'>
 					{!isNull(lastMessageTime) && <TimeDiff timestamp={lastMessageTime} />}
-					{!isNull(unreadCount) && (
+					{!isNull(unreadCount) && unreadCount > 0 && (
 						<span className='badge bg-danger rounded-pill float-end'>{unreadCount}</span>
 					)}
 				</div>
@@ -113,9 +114,10 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 	const getPropsForChatSummary = param => {
 		if (currentTab === CONVERSATION_TAB) {
 			const convo = param
+			console.log({ convo })
 			const prop = {
 				userName: convo.name,
-				unreadCount: convo.unreadCount,
+				unreadCount: convo.totalUnread,
 				isOnline: isOnline(convo.id),
 				onSelect: () => {
 					onSelect({ userId: convo.id, userName: convo.name })
@@ -211,8 +213,8 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 		}
 	}
 
-	const renderTheirMessage = msg => (
-		<div className='d-flex flex-row justify-content-start mb-4'>
+	const renderTheirMessage = (key, msg) => (
+		<div key={key} className='d-flex flex-row justify-content-start mb-4'>
 			<ProfileIcon />
 			<div className='p-3 ms-3' style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}>
 				<p className='small mb-0'>{msg}</p>
@@ -220,8 +222,8 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 		</div>
 	)
 
-	const renderMyMessage = msg => (
-		<div className='d-flex flex-row justify-content-end mb-4'>
+	const renderMyMessage = (key, msg) => (
+		<div key={key} className='d-flex flex-row justify-content-end mb-4'>
 			<div className='p-3 me-3 border' style={{ borderRadius: '15px', backgroundColor: '#fbfbfb' }}>
 				<p className='small mb-0'>{msg}</p>
 			</div>
@@ -250,13 +252,13 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 				<div>
 					{conversation.messages.length === 0
 						? 'No messages to show'
-						: conversation.messages.map(message => {
+						: conversation.messages.map((message, idx) => {
 								if (message.from === user.userId) {
 									// render my message
-									return renderMyMessage(message.text)
+									return renderMyMessage(idx, message.text)
 								} else {
 									// render their message
-									return renderTheirMessage(message.text)
+									return renderTheirMessage(idx, message.text)
 								}
 						  })}
 				</div>
@@ -318,6 +320,8 @@ export default function ChatBox() {
 		})
 
 		sendMessage(newMessage)
+		dispatch(addMessageToConvo({ id: selectedConvo.id, message: newMessage }))
+		// selectedConvo.messages.push(newMessage)
 	}
 
 	return (
