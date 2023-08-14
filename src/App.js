@@ -19,7 +19,6 @@ import {
 	selectConvos,
 	selectOnlineUsers,
 	selectSelectedConvo,
-	setConvos,
 	setOnlineUsers
 } from './features/chatSlice'
 

@@ -97,7 +97,7 @@ export const chatSlice = createSlice({
 		},
 		addMessageToConvo(state, { payload }) {
 			if (OrderedMap.has(state.convos, payload.id)) {
-				console.log('already here')
+	
 				// conversation already exists, add message
 				state.convos.items[payload.id].messages.push(payload.message)
 
@@ -113,7 +113,7 @@ export const chatSlice = createSlice({
 					state.convos.order.unshift(payload.id)
 				}
 			} else {
-				console.log('not here')
+
 				// conversation does not exist, create and add it
 				const username = state.contacts[payload.id].userName
 				const newConvo = createNewConvo(payload.id, username)

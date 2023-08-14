@@ -114,7 +114,7 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 	const getPropsForChatSummary = param => {
 		if (currentTab === CONVERSATION_TAB) {
 			const convo = param
-			console.log({ convo })
+
 			const prop = {
 				userName: convo.name,
 				unreadCount: convo.totalUnread,
