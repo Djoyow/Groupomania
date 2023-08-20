@@ -161,7 +161,17 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 	)
 
 	return (
-		<div className='card p-3' style={{ borderRadius: '15px', overflow: 'hidden' }}>
+		<div
+			className='card p-3'
+			style={{
+				borderBottomLeftRadius: 0,
+				borderBottomRightRadius: 0,
+				borderTopRightRadius: '15px',
+				borderTopLeftRadius: '15px',
+				overflow: 'hidden',
+				height: '100%'
+			}}
+		>
 			<ul className='nav nav-pills'>
 				<li className='nav-item'>
 					<button
@@ -187,10 +197,8 @@ function UsersWindow({ closeWindow, conversations, onlineUsers, onSelect, isOnli
 					</Button>
 				</li>
 			</ul>
-			<div className='row'>
-				<div style={{ position: 'relative', maxHeight: '600px', height: '600px', overflowY: 'auto' }}>
-					{currentView}
-				</div>
+			<div className='row' style={{ height: '100%' }}>
+				<div style={{ position: 'relative', height: '100%', overflowY: 'auto' }}>{currentView}</div>
 			</div>
 		</div>
 	)
@@ -232,7 +240,7 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 	)
 
 	return (
-		<div className='card' style={{ borderRadius: '15px', height: '600px' }}>
+		<div className='custom-card'>
 			{/* Chat Header */}
 			<div
 				className='card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0'
@@ -248,8 +256,8 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 			</div>
 
 			{/* Chat Body */}
-			<div className='card-body d-flex flex-column justify-content-between'>
-				<div>
+			<div className='custom-card-body'>
+				<div className='message-area custom-scroll'>
 					{conversation.messages.length === 0
 						? 'No messages to show'
 						: conversation.messages.map((message, idx) => {
@@ -263,7 +271,7 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 						  })}
 				</div>
 
-				<div className='form-outline' style={{ marginTop: 'auto' }}>
+				<div className='message-box form-outline'>
 					<textarea
 						className='form-control'
 						id='textAreaExample'
@@ -324,34 +332,30 @@ export default function ChatBox() {
 		// selectedConvo.messages.push(newMessage)
 	}
 
-	return (
-		<>
-			<div className='position-fixed bottom-0 end-0 m-3'>
-				{isOpen ? (
-					<div style={{ maxWidth: '550px', width: '550px', maxHeight: '600px' }}>
-						{selectedConvo === null ? (
-							<UsersWindow
-								closeWindow={minimizeFloatingChat}
-								conversations={convos}
-								onlineUsers={onlineUsersOrderedByUserName}
-								onSelect={openConversation}
-								isOnline={isOnline}
-							/>
-						) : (
-							<ChatWindow
-								minimizeWindow={minimizeFloatingChat}
-								closeChat={closeOpenConvo}
-								send={send}
-								conversation={selectedConvo}
-							/>
-						)}
-					</div>
-				) : (
-					<Button variant='primary' onClick={openFloatingChat}>
-						<FontAwesomeIcon icon={faComments} size='lg' />
-					</Button>
-				)}
-			</div>
-		</>
+	return isOpen ? (
+		<div style={{ width: 'min(550px, 100vw)', height: '600px' }} className='position-fixed bottom-0 end-0 mx-3'>
+			{selectedConvo === null ? (
+				<UsersWindow
+					closeWindow={minimizeFloatingChat}
+					conversations={convos}
+					onlineUsers={onlineUsersOrderedByUserName}
+					onSelect={openConversation}
+					isOnline={isOnline}
+				/>
+			) : (
+				<ChatWindow
+					minimizeWindow={minimizeFloatingChat}
+					closeChat={closeOpenConvo}
+					send={send}
+					conversation={selectedConvo}
+				/>
+			)}
+		</div>
+	) : (
+		<div className='position-fixed bottom-0 end-0 m-3'>
+			<Button variant='primary' onClick={openFloatingChat}>
+				<FontAwesomeIcon icon={faComments} size='lg' />
+			</Button>
+		</div>
 	)
 }

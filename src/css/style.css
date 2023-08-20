@@ -1,11 +1,8 @@
 :root {
-  --primary: #FD2D01;
-  --Secondary: #FFD7D7;
-  --Tertiaire: #4E5166;
-
+	--primary: #fd2d01;
+	--Secondary: #ffd7d7;
+	--Tertiaire: #4e5166;
 }
-
-
 
 /*
   *
@@ -14,29 +11,26 @@
   ***/
 
 .header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  background-color: var(--Secondary);
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	background-color: var(--Secondary);
 }
 
 .header img {
-  height: 5rem;
-  width: 5rem;
-  object-fit: cover;
-  margin-left: 2%;
-
+	height: 5rem;
+	width: 5rem;
+	object-fit: cover;
+	margin-left: 2%;
 }
 
 .disconnect {
-  margin-right: 2%;
-  display: flex;
-  flex-direction: column;
-  margin-top: auto;
-  margin-bottom: auto;
-
+	margin-right: 2%;
+	display: flex;
+	flex-direction: column;
+	margin-top: auto;
+	margin-bottom: auto;
 }
-
 
 /*
   *
@@ -45,53 +39,47 @@
   ***/
 
 body {
-  background-color: var(--Tertiaire) !important;
+	background-color: var(--Tertiaire) !important;
 }
 
 .bt {
-  background-color: var(--primary) !important;
-
+	background-color: var(--primary) !important;
 }
-
 
 .loginOut {
-  padding-top: 2rem;
-  height: 20rem;
-  /* background-color: white;*/
-
+	padding-top: 2rem;
+	height: 20rem;
+	/* background-color: white;*/
 }
-
 
 .creatCompte {
-
-  color: var(--primary);
+	color: var(--primary);
 }
-label, .noCompte, .creatCompte{
-  color: white;
-  text-decoration: none;
+label,
+.noCompte,
+.creatCompte {
+	color: white;
+	text-decoration: none;
 }
-label{
-  display: block !important;
+label {
+	display: block !important;
 }
-
 
 p {
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .postCard {
-  display: flex !important;
-  flex-direction: column;
-  margin: 2rem auto;
-  width: 70%;
-  background-color: white;
-
+	display: flex !important;
+	flex-direction: column;
+	margin: 2rem auto;
+	width: 70%;
+	background-color: white;
 }
 
 .postCart,
 img {
-  object-fit: cover;
-
+	object-fit: cover;
 }
 
 /*.postCardHealder {
@@ -104,62 +92,55 @@ img {
 }*/
 
 .cardButton {
-  display: flex;
-  justify-content: space-around;
-  padding: 1% 0 0 0;
-  border-top: var(--Tertiaire) solid .1rem;
+	display: flex;
+	justify-content: space-around;
+	padding: 1% 0 0 0;
+	border-top: var(--Tertiaire) solid 0.1rem;
 }
 
 .cardButton p {
-  margin: 0;
-
+	margin: 0;
 }
 
 .cardText {
-  padding: 1%;
-
+	padding: 1%;
 }
 
 .postDate {
-  color: var(--Tertiaire);
-  margin-top: auto;
+	color: var(--Tertiaire);
+	margin-top: auto;
 }
 
 .editPostCardHealder {
-  display: flex;
-  justify-content: space-around;
-
+	display: flex;
+	justify-content: space-around;
 }
 
 .editPostCardIcon {
-  display: flex;
-  /*justify-content: space-around;
+	display: flex;
+	/*justify-content: space-around;
   text-align: center;
   align-items: center;*/
 
-  color: var(--Tertiaire);
-  background-color: var(--Secondary);
-  height: 3rem;
-  width: 3rem;
+	color: var(--Tertiaire);
+	background-color: var(--Secondary);
+	height: 3rem;
+	width: 3rem;
 
-  border-radius: 50%;
+	border-radius: 50%;
 }
 
 .editPostButton {
-
-  border-top: var(--Tertiaire) solid .1rem;
-  margin-top: .5rem;
-  display: flex;
-  justify-content: flex-start;
-  color: green;
+	border-top: var(--Tertiaire) solid 0.1rem;
+	margin-top: 0.5rem;
+	display: flex;
+	justify-content: flex-start;
+	color: green;
 }
 
 .editPostCardText {
-
-  width: 70%;
-  background-color: #FD2D01;
-
-
+	width: 70%;
+	background-color: #fd2d01;
 }
 
 /*
@@ -168,8 +149,8 @@ img {
   *
   ***/
 footer {
-  background-color: var(--Secondary);
-  width: 100%;
+	background-color: var(--Secondary);
+	width: 100%;
 }
 
 /*
@@ -183,3 +164,65 @@ footer {
     background-color: lightblue;
   }
 }*/
+
+/*
+    Card
+*/
+.custom-card {
+	background-color: white;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-top-right-radius: 15px;
+	border-top-left-radius: 15px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.custom-card-body {
+	align-items: stretch;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+    flex: 1
+}
+
+.message-area {
+	flex: 1;
+	overflow: auto;
+	padding: 3px 15px;
+}
+
+.message-box {
+	flex-shrink: 0;
+	align-self: stretch;
+	justify-self: flex-end;
+    padding: 0 15px 15px;
+}
+
+/* CUSTOM SCROLL BAR */
+/* Webkit browsers like Chrome, Safari, newer versions of Opera */
+.custom-scroll::-webkit-scrollbar {
+	width: 10px; /* Adjust width of the vertical scrollbar */
+	height: 10px; /* Adjust height for horizontal scrollbar if needed */
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+	background-color: #f5f5f5; /* Color of the scrollbar track */
+	border-radius: 5px; /* Round corners of the track */
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+	background-color: #888; /* Color of the scrollbar thumb */
+	border-radius: 5px; /* Round corners of the thumb */
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+	background-color: #555; /* Color of the scrollbar thumb on hover */
+}
+
+/* Firefox 64 and above */
+.custom-scroll {
+	scrollbar-width: thin; /* 'thin' or 'auto' or 'none' - Adjust width of the scrollbar */
+	scrollbar-color: #888 #f5f5f5; /* thumb and track color */
+}
