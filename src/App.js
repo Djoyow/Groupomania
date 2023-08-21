@@ -52,7 +52,7 @@ function App() {
 		if (user) socket.connect()
 
 		return () => {
-			socket.off('online-usoers', updateOnlineUsers)
+			socket.off('online-users', updateOnlineUsers)
 			socket.off('message', receiveMessage)
 			socket.off('connect', join)
 		}

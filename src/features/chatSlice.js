@@ -90,14 +90,13 @@ export const chatSlice = createSlice({
 				state.selectedConvo = payload.userId
 			}
 
-            state.convos.items[payload.userId].totalUnread = 0
+			state.convos.items[payload.userId].totalUnread = 0
 		},
 		closeSelectedConvo(state) {
 			state.selectedConvo = null
 		},
 		addMessageToConvo(state, { payload }) {
 			if (OrderedMap.has(state.convos, payload.id)) {
-	
 				// conversation already exists, add message
 				state.convos.items[payload.id].messages.push(payload.message)
 
@@ -113,7 +112,6 @@ export const chatSlice = createSlice({
 					state.convos.order.unshift(payload.id)
 				}
 			} else {
-
 				// conversation does not exist, create and add it
 				const username = state.contacts[payload.id].userName
 				const newConvo = createNewConvo(payload.id, username)
@@ -123,9 +121,9 @@ export const chatSlice = createSlice({
 				state.convos.order.unshift(payload.id)
 			}
 		},
-        clearUnread(state, {payload}) {
-            state.convos.items[payload].totalUnread = 0
-        }
+		clearUnread(state, { payload }) {
+			state.convos.items[payload].totalUnread = 0
+		}
 	}
 })
 

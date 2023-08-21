@@ -225,7 +225,7 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 		<div key={key} className='d-flex flex-row justify-content-start mb-4'>
 			<ProfileIcon />
 			<div className='p-3 ms-3' style={{ borderRadius: '15px', backgroundColor: 'rgba(57, 192, 237,.2)' }}>
-				<p className='small mb-0'>{msg}</p>
+				<p className='small mb-0 message'>{msg}</p>
 			</div>
 		</div>
 	)
@@ -233,7 +233,7 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 	const renderMyMessage = (key, msg) => (
 		<div key={key} className='d-flex flex-row justify-content-end mb-4'>
 			<div className='p-3 me-3 border' style={{ borderRadius: '15px', backgroundColor: '#fbfbfb' }}>
-				<p className='small mb-0'>{msg}</p>
+				<p className='small mb-0 message'>{msg}</p>
 			</div>
 			<ProfileIcon />
 		</div>
@@ -258,17 +258,21 @@ function ChatWindow({ closeChat, minimizeWindow, send, conversation }) {
 			{/* Chat Body */}
 			<div className='custom-card-body'>
 				<div className='message-area custom-scroll'>
-					{conversation.messages.length === 0
-						? 'No messages to show'
-						: conversation.messages.map((message, idx) => {
-								if (message.from === user.userId) {
-									// render my message
-									return renderMyMessage(idx, message.text)
-								} else {
-									// render their message
-									return renderTheirMessage(idx, message.text)
-								}
-						  })}
+					{conversation.messages.length === 0 ? (
+						<div style={{ textAlign: 'center', padding: '20px' }}>
+							Send a message to start a converstaion
+						</div>
+					) : (
+						conversation.messages.map((message, idx) => {
+							if (message.from === user.userId) {
+								// render my message
+								return renderMyMessage(idx, message.text)
+							} else {
+								// render their message
+								return renderTheirMessage(idx, message.text)
+							}
+						})
+					)}
 				</div>
 
 				<div className='message-box form-outline'>
