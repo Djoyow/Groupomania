@@ -21,6 +21,7 @@ import { notify } from '../service/notification';
 import Spinner from '../component/spinner';
 import { getPost } from '../service/auth.service';
 import { useCallback } from 'react';
+import ChatBox from './chatbox';
 
 function App() {
     const imgUrl='https://res.cloudinary.com/dkdwhd7hl/image/upload/';
@@ -357,6 +358,7 @@ function App() {
                     );
                 })}
             </>
+            <ChatBox />
         </div>
     );
 }

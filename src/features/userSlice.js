@@ -4,6 +4,7 @@ import { getUser } from '../service/auth.service';
 const initialState = {
     user: {
         userId: getUser().userId,
+        userName: getUser().userName,
         token: getUser().token,
         loggedIn: getUser().loggedIn,
         isAdmin: getUser().isAdmin,
