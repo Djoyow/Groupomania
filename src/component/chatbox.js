@@ -333,7 +333,6 @@ export default function ChatBox() {
 
 		sendMessage(newMessage)
 		dispatch(addMessageToConvo({ id: selectedConvo.id, message: newMessage }))
-		// selectedConvo.messages.push(newMessage)
 	}
 
 	return isOpen ? (
