@@ -27,6 +27,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "postinstall": "npm run webpack",
+    "webpack": "webpack",
     "heroku-postbuild": "npm run build",
     "build": "react-scripts build",
     "test": "react-scripts test",
